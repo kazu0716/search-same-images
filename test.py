@@ -14,11 +14,7 @@ query = Query()
 
 def insert_db(data):
     try:
-        result = table.search(query.file_name == data["file_name"])
-        if result == []:
-            table.insert(data)
-        # else:
-        #     table.update(data)
+        table.insert(data)
     except Exception as e:
         print(e)
 
@@ -39,17 +35,18 @@ def gen_image_hash(path, alg):
 def main():
     image_list = glob.glob("./images/*.png", recursive=True)
     for image_file in image_list:
-        p_hash = gen_image_hash(image_file, "phash")
-        w_hash = gen_image_hash(image_file, "whash")
-        data = {
-            "file_name": image_file.split("/")[-1],
-            "full_path": image_file,
-            "p_hash": str(p_hash),
-            "p_row_hash": repr(p_hash),
-            "w_hash": str(w_hash),
-            "w_row_hash": repr(w_hash)
-        }
-        insert_db(data)
+        if table.search(query.full_path == image_file) == []:
+            p_hash = gen_image_hash(image_file, "phash")
+            w_hash = gen_image_hash(image_file, "whash")
+            data = {
+                "file_name": image_file.split("/")[-1],
+                "full_path": image_file,
+                "p_hash": str(p_hash),
+                "p_row_hash": repr(p_hash),
+                "w_hash": str(w_hash),
+                "w_row_hash": repr(w_hash)
+            }
+            insert_db(data)
 
 
 if __name__ == '__main__':
