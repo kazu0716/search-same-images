@@ -32,7 +32,7 @@ def gen_image_hash(path, alg):
         sys.exit(1)
 
 
-def main():
+def upload_files():
     image_list = glob.glob("./images/*.png", recursive=True)
     for image_file in image_list:
         if table.search(query.full_path == image_file) == []:
@@ -47,6 +47,10 @@ def main():
                 "w_row_hash": repr(w_hash)
             }
             insert_db(data)
+
+
+def main():
+    pass
 
 
 if __name__ == '__main__':
