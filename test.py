@@ -48,30 +48,59 @@ def upload_images(image_file):
 
 
 def search_images(image_file):
-    results = []
-    all_data = table.all()[0]
+    result = {
+        "exact_matches": [],
+        "partial_matches": []
+    }
+    all_data = table.all()
 
     p_hash = gen_image_hash(image_file, "phash")
     w_hash = gen_image_hash(image_file, "whash")
 
-    search_result = table.search(
+    check_hash_string = table.search(
         (query.p_hash == str(p_hash)) | (query.w_hash == str(w_hash))
     )
-    if len(search_result) == 0:
-        return search_result
-
-    return results
+    if len(check_hash_string) == 0:
+        result["exact_matches"].append({
+            "match_file": {
+                "searched_file": image_file.split("/")[-1]
+                # "hit_file": data["file_name"]
+            },
+            "image_hash": check_hash_string
+        })
+    else:
+        for data in all_data:
+            diff_p_hash = pickle.loads(eval(data["p_row_hash"])) - p_hash
+            diff_w_hash = pickle.loads(eval(data["w_row_hash"])) - w_hash
+            if diff_p_hash < 10 or diff_w_hash < 10:
+                result["partial_matches"].append({
+                    "match_file": {
+                        "searched_file": image_file.split("/")[-1],
+                        "hit_file": data["file_name"]
+                    },
+                    "p_hash": {
+                        "diff": diff_p_hash
+                    },
+                    "w_hash": {
+                        "diff": diff_w_hash
+                    }
+                })
+    return result
 
 
 def main():
-    # image_list = glob.glob("./upload_images/*.png", recursive=True)
-    # for image_file in image_list:
+    # upload_list = glob.glob("./upload_images/*.png", recursive=True)
+    # for image_file in upload_list:
     #     upload_images(image_file)
-    # image_list = glob.glob("./search_images/*.png", recursive=True)
-    # for image_file in image_list:
-    #     search_images(image_file)
-    result = search_images("./search_images/image001.png")
-    print(result)
+    search_list = glob.glob("./search_images/*.png", recursive=True)
+    for image_file in search_list:
+        result = search_images(image_file)
+        if len(result) == 0:
+            print("no matches")
+        else:
+            print(result)
+    # result = search_images("./search_images/image001.png")
+    # print(result)
 
 
 if __name__ == '__main__':
