@@ -1,5 +1,6 @@
 # -*- using:utf-8 -*-
 import time
+import sys
 from PIL import Image
 import imagehash
 import glob
@@ -16,25 +17,37 @@ def insert_db(data):
         result = table.search(query.file_name == data["file_name"])
         if result == []:
             table.insert(data)
-        else:
-            table.update(data)
+        # else:
+        #     table.update(data)
     except Exception as e:
         print(e)
 
 
-def gen_hash(path):
-    return imagehash.whash(Image.open(path))
+def gen_image_hash(path, alg):
+    if alg == "whash":
+        return imagehash.whash(Image.open(path))
+    elif alg == "phash":
+        return imagehash.phash(Image.open(path))
+    elif alg == "dhash":
+        return imagehash.dhash(Image.open(path))
+    elif alg == "ahash":
+        return imagehash.average_hash(Image.open(path))
+    else:
+        sys.exit(1)
 
 
 def main():
     image_list = glob.glob("./images/*.png", recursive=True)
     for image_file in image_list:
-        image_hash = gen_hash(image_file)
+        p_hash = gen_image_hash(image_file, "phash")
+        w_hash = gen_image_hash(image_file, "whash")
         data = {
             "file_name": image_file.split("/")[-1],
             "full_path": image_file,
-            "image_hash": str(image_hash),
-            "row_hash": repr(image_hash)
+            "p_hash": str(p_hash),
+            "p_row_hash": repr(p_hash),
+            "w_hash": str(w_hash),
+            "w_row_hash": repr(w_hash)
         }
         insert_db(data)
 
