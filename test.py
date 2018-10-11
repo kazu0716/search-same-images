@@ -32,25 +32,46 @@ def gen_image_hash(path, alg):
         sys.exit(1)
 
 
-def upload_files():
-    image_list = glob.glob("./images/*.png", recursive=True)
-    for image_file in image_list:
-        if table.search(query.full_path == image_file) == []:
-            p_hash = gen_image_hash(image_file, "phash")
-            w_hash = gen_image_hash(image_file, "whash")
-            data = {
-                "file_name": image_file.split("/")[-1],
-                "full_path": image_file,
-                "p_hash": str(p_hash),
-                "p_row_hash": repr(p_hash),
-                "w_hash": str(w_hash),
-                "w_row_hash": repr(w_hash)
-            }
-            insert_db(data)
+def upload_images(image_file):
+    if len(table.search(query.full_path == image_file)) == 0:
+        p_hash = gen_image_hash(image_file, "phash")
+        w_hash = gen_image_hash(image_file, "whash")
+        data = {
+            "file_name": image_file.split("/")[-1],
+            "full_path": image_file,
+            "p_hash": str(p_hash),
+            "p_row_hash": repr(pickle.dumps(p_hash)),
+            "w_hash": str(w_hash),
+            "w_row_hash": repr(pickle.dumps(w_hash))
+        }
+        insert_db(data)
+
+
+def search_images(image_file):
+    results = []
+    all_data = table.all()[0]
+
+    p_hash = gen_image_hash(image_file, "phash")
+    w_hash = gen_image_hash(image_file, "whash")
+
+    search_result = table.search(
+        (query.p_hash == str(p_hash)) | (query.w_hash == str(w_hash))
+    )
+    if len(search_result) == 0:
+        return search_result
+
+    return results
 
 
 def main():
-    pass
+    # image_list = glob.glob("./upload_images/*.png", recursive=True)
+    # for image_file in image_list:
+    #     upload_images(image_file)
+    # image_list = glob.glob("./search_images/*.png", recursive=True)
+    # for image_file in image_list:
+    #     search_images(image_file)
+    result = search_images("./search_images/image001.png")
+    print(result)
 
 
 if __name__ == '__main__':
