@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>SUUMO Fake Demo</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="/static/css/4-col-portfolio.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">Demo Program</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Content -->
+  <div class="container">
+
+    <!-- Page Heading -->
+    <h1 class="my-4">Search Same Images</h1>
+    <div class="row">
+      {% for json_data in result %}
+      <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
+        <div class="card h-100">
+          <h5><a href={{json_data[ "detail"]}}>{{ json_data["title"]|e }}</a></h5>
+          <p>住所: {{ json_data["address"]|e }}</p>
+          <p>最寄駅: {{ json_data["location"]|e }}</p>
+          <p>築年数: {{ json_data["age"]|e }}</p>
+          <p>家賃/管理費: {{ json_data["rent"]|e }}/{{ json_data["other_cost"]|e }}</p>
+          <p>間取り: {{ json_data["layout"]|e }} / {{ json_data["room_size"]|e }}</p>
+          <p>初期費用: {{ json_data["deposit_info"]|e }}</p>
+          <p>{{ json_data["floor"]|e }} / {{ json_data["height"]|e }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <!-- /.row -->
+  </div>
+  <!-- /.container -->
+
+  <!-- Footer -->
+  <footer class="py-5 bg-dark">
+    <div class="container">
+      <p class="m-0 text-center text-white">Copyright &copy; search same images 2018</p>
+    </div>
+    <!-- /.container -->
+  </footer>
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="/static/vendor/jquery/jquery.min.js"></script>
+  <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>
